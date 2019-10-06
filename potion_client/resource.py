@@ -147,6 +147,9 @@ class Resource(Reference):
     def fetch(cls, id):
         return cls._self(id=id)
 
+    def refresh(self):
+        return self._self(id=self.id)
+
     def check(self):
         pass
 
