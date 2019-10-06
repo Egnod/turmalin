@@ -3,22 +3,8 @@
 Potion client
 =============
 
-
-.. image:: https://img.shields.io/travis/biosustain/potion-client/new-potion-client.svg?style=flat-square
-    :target: https://travis-ci.org/biosustain/potion-client
-
-.. image:: https://img.shields.io/coveralls/biosustain/potion-client/new-potion-client.svg?style=flat-square
-    :target: https://coveralls.io/r/biosustain/potion-client
-
-.. image:: https://img.shields.io/pypi/v/Potion-Client.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/Potion-Client
-
 .. image:: https://img.shields.io/pypi/l/Potion-Client.svg?style=flat-square
     :target: https://pypi.python.org/pypi/Potion-Client
-
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/biosustain/potion
-   :target: https://gitter.im/biosustain/potion?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
 Description
 ===========
@@ -71,12 +57,13 @@ Example
 Installation
 ============
 
-To install ``potion-client``, run:
+To install ``potion-client`` (**turmalin** version), run:
 
-::
+    poetry add turmalin
 
-    pip install potion-client
+or
 
+    pip install turmalin
 
 
 
@@ -84,3 +71,5 @@ Authors
 =======
 
 Potion-client was written by `João Cardoso <https://github.com/joaocardoso>`_ and `Lars Schöning <https://github.com/lyschoening>`_.
+
+Old-shit-clean by `Alexander Lavrov <https://github.com/egond>`_
