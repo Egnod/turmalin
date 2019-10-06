@@ -4,10 +4,10 @@ from pprint import pformat
 from potion_client.utils import escape
 
 
-class PaginatedList(collections.Sequence):
+class PaginatedList(collections.abc.Sequence):
     def __init__(self, binding, params):
         self._pages = {}
-        self._per_page = per_page = params.pop('per_page', 20)
+        self._per_page = per_page = params.pop("per_page", 20)
         self._binding = binding
         self._total_count = 0
         self._request_params = params
@@ -29,12 +29,12 @@ class PaginatedList(collections.Sequence):
         return self._total_count
 
     def fetch_page(self, page, per_page):
-        params = dict(page=page, per_page=per_page)
+        params = {"page": page, "per_page": per_page}
         params.update(self._request_params)
         response, response_data = self._binding.make_request(None, params)
 
         try:
-            self._total_count = int(response.headers['X-Total-Count'])
+            self._total_count = int(response.headers["X-Total-Count"])
         except KeyError:
             self._total_count = len(response_data)
 
@@ -44,24 +44,32 @@ class PaginatedList(collections.Sequence):
         if len(self) <= 10:
             items = [escape(pformat(item)) for item in self[:]]
         else:
-            items = [escape(pformat(item)) for item in self[:5]] + \
-                    ['<strong>...</strong>'] + \
-                    [escape(pformat(item)) for item in self[-5:]]
+            items = (
+                [escape(pformat(item)) for item in self[:5]]
+                + ["<strong>...</strong>"]
+                + [escape(pformat(item)) for item in self[-5:]]
+            )
 
-        return '''<table>
+        return """<table>
         <thead>
             <tr>
                 <th><code>PaginatedList({params})</code>: <em>{count}</em> items</th>
             </tr>
         </thead>
         <tbody>{items}</tbody>
-        </table>'''.format(
-            params=', '.join(['{}.{}'.format(self._binding.owner.__name__, self._binding.link.rel)] +
-                             ['{}={}'.format(k, repr(v)) for k, v in self._request_params.items()]),
+        </table>""".format(
+            params=", ".join(
+                ["{}.{}".format(self._binding.owner.__name__, self._binding.link.rel)]
+                + ["{}={}".format(k, repr(v)) for k, v in self._request_params.items()]
+            ),
             count=self._total_count,
-            items='\n'.join('<tr><td><code>{}</code></td></tr>'.format(item) for item in items))
+            items="\n".join("<tr><td><code>{}</code></td></tr>".format(item) for item in items),
+        )
 
     def __repr__(self):
-        return 'PaginatedList({params})'.format(params=', '.join(
-            ['{}.{}'.format(self._binding.owner.__name__, self._binding.link.rel)] +
-            ['{}={}'.format(k, repr(v)) for k, v in self._request_params.items()]), )
+        return "PaginatedList({params})".format(
+            params=", ".join(
+                ["{}.{}".format(self._binding.owner.__name__, self._binding.link.rel)]
+                + ["{}={}".format(k, repr(v)) for k, v in self._request_params.items()]
+            )
+        )

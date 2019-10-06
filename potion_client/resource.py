@@ -1,8 +1,6 @@
 import collections
 from pprint import pformat
 
-import six
-
 from potion_client.exceptions import ItemNotFound, MultipleItemsFound
 from potion_client.utils import escape
 
@@ -17,19 +15,20 @@ def uri_for(reference):
     return reference._uri
 
 
-class Reference(collections.Mapping):
+class Reference(collections.abc.Mapping):
     """
 
     This implementation makes the assumption that a {$ref} object always points to an object, never an array or
     any of the other types.
     """
+
     _client = None
     __properties = None
 
     def __init__(self, uri, client=None):
         self._status = None
         self._uri = uri
-        self.__properties = {'$uri': uri}
+        self.__properties = {"$uri": uri}
         if client is not None:
             self._client = client
 
@@ -62,8 +61,7 @@ class Reference(collections.Mapping):
         return len(self._properties)
 
     def __repr__(self):
-        return '{cls}({uri})'.format(cls=self.__class__.__name__,
-                                     uri=repr(self._uri))
+        return "{cls}({uri})".format(cls=self.__class__.__name__, uri=repr(self._uri))
 
 
 class Resource(Reference):
@@ -78,16 +76,16 @@ class Resource(Reference):
     def __new__(cls, uri=None, **kwargs):
         instance = None
         if uri is not None:
-            if not (isinstance(uri, six.string_types) and uri.startswith('/')) and cls._self is not None:
+            if not (isinstance(uri, str) and uri.startswith("/")) and cls._self is not None:
                 uri = cls._self.href.format(id=uri)
 
             instances = cls._client._instances
             instance = instances.get(uri, None)
 
         if instance is None:
-            instance = super(Resource, cls).__new__(cls)
+            instance = super().__new__(cls)
             super(Resource, instance).__init__(uri)
-            instance._properties = {'$uri': uri}
+            instance._properties = {"$uri": uri}
             if not kwargs:
                 instance._status = None
             else:
@@ -107,7 +105,7 @@ class Resource(Reference):
     @property
     def id(self):
         if self._uri is not None:
-            id_ = self._uri[self._uri.rfind('/') + 1:]
+            id_ = self._uri[self._uri.rfind("/") + 1 :]
             if id_.isdigit():
                 return int(id_)
             return id_
@@ -165,19 +163,22 @@ class Resource(Reference):
         return self._destroy(id=self.id)
 
     def _repr_html_(self):
-        return '''<table>
+        return """<table>
         <thead>
             <tr>
                 <th colspan="2"><code>{cls}({id})</code></th>
             </tr>
         </thead>
         <tbody>{properties}</tbody>
-        </table>'''.format(
+        </table>""".format(
             cls=self.__class__.__name__,
             id=escape(repr(self.id)),
-            properties='\n'.join('<tr><td>{}</td><td><code>{}</code></td>'.format(escape(k),
-                                                                                  escape(pformat(v)))
-                                 for k, v in self._properties.items() if not k.startswith('$')))
+            properties="\n".join(
+                "<tr><td>{}</td><td><code>{}</code></td>".format(escape(k), escape(pformat(v)))
+                for k, v in self._properties.items()
+                if not k.startswith("$")
+            ),
+        )
 
     def __repr__(self):
         # if self._status == 200:
@@ -187,4 +188,4 @@ class Resource(Reference):
         #                                                   id=repr(self.id),
         #                                                   properties=', '.join(parts))
         # TODO some way to define a good key for display
-        return '{cls}({id})'.format(cls=self.__class__.__name__, id=repr(self.id))
+        return "{cls}({id})".format(cls=self.__class__.__name__, id=repr(self.id))

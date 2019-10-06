@@ -1,9 +1,9 @@
 import calendar
-from functools import partial
-from json import JSONEncoder, JSONDecoder
 from datetime import date, datetime
+from functools import partial
+from json import JSONDecoder, JSONEncoder
+
 from six.moves.urllib.parse import urljoin
-import six
 
 from potion_client.resource import Reference
 
@@ -27,7 +27,7 @@ except ImportError:
         def dst(self, dt):
             return timedelta(0)
 
-    timezone.utc = timezone(timedelta(0), 'UTC')
+    timezone.utc = timezone(timedelta(0), "UTC")
 
 
 class PotionJSONEncoder(JSONEncoder):
@@ -83,17 +83,17 @@ class PotionJSONDecoder(JSONDecoder):
             if len(o) == 1:
                 if "$date" in o:
                     return datetime.fromtimestamp(o["$date"] / 1000.0, timezone.utc)
-                if "$ref" in o and isinstance(o["$ref"], six.string_types):
+                if "$ref" in o and isinstance(o["$ref"], str):
                     reference = o["$ref"]
                     if reference.startswith("#"):
                         reference = urljoin(self.referrer, reference, True)
                     return self.client.instance(reference)
-            elif self.uri_to_instance and "$uri" in o and isinstance(o["$uri"], six.string_types):
+            elif self.uri_to_instance and "$uri" in o and isinstance(o["$uri"], str):
                 # TODO handle or ("$id" in o and "$type" in o)
                 if depth == 0:
-                    instance = self.client.instance(o['$uri'], default=self.default_instance)
+                    instance = self.client.instance(o["$uri"], default=self.default_instance)
                 else:
-                    instance = self.client.instance(o['$uri'])
+                    instance = self.client.instance(o["$uri"])
 
                 instance._status = 200
                 instance._properties.update({k: self._decode(v, depth + 1) for k, v in o.items()})
@@ -123,9 +123,7 @@ class PotionJSONSchemaDecoder(JSONDecoder):
 
     def decode(self, s, *args, **kwargs):
         o = JSONDecoder.decode(self, s, *args, **kwargs)
-        return schema_resolve_refs(o, partial(self.client.instance,
-                                              cls=JSONSchemaReference,
-                                              client=self.client))
+        return schema_resolve_refs(o, partial(self.client.instance, cls=JSONSchemaReference, client=self.client))
 
 
 def schema_resolve_refs(schema, ref_resolver=None, root=None):
@@ -140,7 +138,7 @@ def schema_resolve_refs(schema, ref_resolver=None, root=None):
     """
     # FIXME more stable implementation that only attempts to resolve {"$ref"} objects where they are allowed.
     if isinstance(schema, dict):
-        if len(schema) == 1 and "$ref" in schema and isinstance(schema["$ref"], six.string_types):
+        if len(schema) == 1 and "$ref" in schema and isinstance(schema["$ref"], str):
             reference = schema["$ref"]
             if reference.startswith("#"):
                 # TODO should also resolve any paths within the reference, which would need to be deferred.
@@ -149,9 +147,7 @@ def schema_resolve_refs(schema, ref_resolver=None, root=None):
 
         resolved = {}
         for k, v in schema.items():
-            resolved[k] = schema_resolve_refs(v,
-                                              ref_resolver=ref_resolver,
-                                              root=root if root is not None else resolved)
+            resolved[k] = schema_resolve_refs(v, ref_resolver=ref_resolver, root=root if root is not None else resolved)
         return resolved
     if isinstance(schema, (list, tuple)):
         return [schema_resolve_refs(v, ref_resolver=ref_resolver, root=root) for v in schema]
