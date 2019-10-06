@@ -72,4 +72,4 @@ Authors
 
 Potion-client was written by `João Cardoso <https://github.com/joaocardoso>`_ and `Lars Schöning <https://github.com/lyschoening>`_.
 
-Old-shit-clean by `Alexander Lavrov <https://github.com/egond>`_
+Old-shit-clean by `Alexander Lavrov <https://github.com/egnod>`_
