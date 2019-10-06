@@ -11,7 +11,7 @@ from potion_client.links import Link
 from potion_client.resource import Reference, Resource, uri_for
 from potion_client.utils import snake_case, upper_camel_case
 
-__version__ = "2.5.1"
+__version__ = "2.5.2"
 
 
 class Client:

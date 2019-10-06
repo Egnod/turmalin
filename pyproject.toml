@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "turmalin"
-version = "2.5.1"
+version = "2.5.2"
 description = "A client for APIs written in Flask-Potion"
 authors = ["Lars Schöning <lars@lyschoening.de>", "Alexander Lavrov <egnod@ya.ru>"]
 license = "MIT"
